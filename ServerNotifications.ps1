@@ -1,10 +1,10 @@
 "Intializing"
 
-$prevData = @()
-$prevData[0] = null
-$prevData[1] = null
+$prevDay = null
+$prevTime = null
+$prevYear = null
 
-$intr = 1500 #15minutes 00seconds
+$intr = 15 #15minutes
 
 cls
 "Starting"
@@ -20,42 +20,64 @@ function Server{
 }
 
 function Check{
-    #get current date and time
-    $arr = ((get-date).ToString('') -replace " PM",'' -replace ":",'' -replace "/",'' -replace " AM",'') -split ' '
-
-    #check if since script started server has shutdown before
-    if($prevData[0] = null){
-        $prevData[0] = $arr[0]
-        $prevData[1] = $arr[1]
+    if(!$prevDay.Value){
+        $prevDay = (get-date).DayOfYear
+        $prevTime = (Get-Date -Format hm)
+        $prevYear = (get-date -UFormat %Y)
+        #Notifications(0)
+        #return
     }
 
-    #check date it shutdown compared to previous shutdown
-    if(prevData[0] - arr[0] = 0){
+    $dayDiff = $prevDay - (get-date).DayOfYear
+    $timeDiff = $prevTime - (geget-date -Format HHmm)
+    $yearDiff = $prevYear - (get-date -UFormat %Y)
 
-        #check time it shutdown compared to previous shutdown
-        if(prevData[1] - arr[1] -le intr){ #if difference is less then 15 minutes
-            "Server May Be in a Crash Loop"
-            Notifications(1) #Notifies of possible Crash Loop
-            Pause
+    if($dayDiff -eq -1){
+        if($timeDiff -le 2359 - $intr){
+            Notifications(1)
+            pause
             return
         }
 
-        $prevData = $arr
-        Notifications(0) #Notifies of shutdown
+        Notifications(0)
         return
     }
 
-    $prevData = $arr
-    Notifications(0) #Notifies of shutdown
+    if($dayDiff -eq 0){
+        if($timeDiff -le $intr){
+            Notifications(1)
+            pause
+            return
+        }
+
+        Notifications(0)
+        return
+    }
+    if($yearDiff -eq -1){
+        #Is it first day of new year and last shutdown was last day of last year
+        if($dayDiff -eq (get-date -Year $prevYear -Month 12 -Day 30).DayOfYear ){ 
+            if($timeDiff -le 2359 - $intr){
+                Notifications(1)
+                pause
+                return
+            }
+        }
+
+        Notifications(0)
+        return
+    }
+       
+    Notifications(0)
     return
+
 }
 
 function Notifications($ver){
     $user = "sharkgaming.notifications@gmail.com"
     $pass = ConvertTo-SecureString -String "rootboot35" -AsPlainText -Force
     $cred = New-Object System.Management.Automation.PSCredential $user, $pass
-    if(ver = 0){$Sub = "Server Crashed/Shutdown"}
-    if(ver = 1){$Sub = "Server May Be in a Crash Loop"}
+    if($ver -eq 0){$Sub = "Server Crashed/Shutdown"}
+    if($ver -eq 1){$Sub = "Server May Be in a Crash Loop"}
     $mailParam = @{
         To = "**********@mms.att.net" # <10 digit number> @ <providers email to text/mms ext>
         From = $user
