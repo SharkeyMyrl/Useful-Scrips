@@ -6,6 +6,8 @@ $prevYear = null
 
 $intr = 15 #15minutes
 
+$msgSent = false
+
 cls
 "Starting"
 Server
@@ -76,8 +78,8 @@ function Notifications($ver){
     $user = "sharkgaming.notifications@gmail.com"
     $pass = ConvertTo-SecureString -String "rootboot35" -AsPlainText -Force
     $cred = New-Object System.Management.Automation.PSCredential $user, $pass
-    if($ver -eq 0){$Sub = "Server Crashed/Shutdown"}
-    if($ver -eq 1){$Sub = "Server May Be in a Crash Loop"}
+    if($ver -eq 0){$Sub = "Server Crashed/Shutdown", $msgSent = false}
+    if($ver -eq 1){$Sub = "Server May Be in a Crash Loop", $msgSent = true}
     $mailParam = @{
         To = "**********@mms.att.net" # <10 digit number> @ <providers email to text/mms ext>
         From = $user
@@ -87,5 +89,5 @@ function Notifications($ver){
         Port = 587
         Credential = $cred
     }
-    Send-MailMessage @mailParam -UseSsl
+	if($ver -eq 1 and $msgSent -eq true){}else{Send-MailMessage @mailParam -UseSsl}
 }
