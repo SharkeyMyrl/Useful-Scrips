@@ -1,16 +1,18 @@
 "Intializing"
 
-$prevDay = null
-$prevTime = null
-$prevYear = null
+$prevDay = $null
+$prevTime = $null
+$prevYear = $null
 
 $intr = 15 #15minutes
 
-$msgSent = false
+$msgSent = $false
 
-cls
-"Starting"
-Server
+#cls
+
+MainMenu
+#"Starting"
+#Server
 
 
 function Server{
@@ -78,8 +80,8 @@ function Notifications($ver){
     $user = "sharkgaming.notifications@gmail.com"
     $pass = ConvertTo-SecureString -String "rootboot35" -AsPlainText -Force
     $cred = New-Object System.Management.Automation.PSCredential $user, $pass
-    if($ver -eq 0){$Sub = "Server Crashed/Shutdown", $msgSent = false}
-    if($ver -eq 1){$Sub = "Server May Be in a Crash Loop", $msgSent = true}
+    if($ver -eq 0){$Sub = "Server Crashed/Shutdown"; $msgSent = $false}
+    if($ver -eq 1){$Sub = "Server May Be in a Crash Loop"; $msgSent = $true}
     $mailParam = @{
         To = "**********@mms.att.net" # <10 digit number> @ <providers email to text/mms ext>
         From = $user
@@ -89,5 +91,81 @@ function Notifications($ver){
         Port = 587
         Credential = $cred
     }
-	if($ver -eq 1 and $msgSent -eq true){}else{Send-MailMessage @mailParam -UseSsl}
+	if($ver -eq 1 -and $msgSent){}else{Send-MailMessage @mailParam -UseSsl}
 }
+
+
+
+
+
+function MainMenu
+{
+    $list = @{}
+    $name = @()
+    $opt = @("Add Server", "Manage Server", "Terminate All", "Close")
+    for($i=1; $i -le $name.Length; $i++){
+        
+    }
+    $main = Read-Host '#'
+    cls
+
+    switch($main)
+    {
+        "1"{
+            
+
+            break
+        }
+        "2"{
+			if($name.Length -gt 1){
+				for($i=1; $i -le $name.Length; $i++)
+				{
+					Write-Host "$($i). $($Name[$i])"
+				}
+
+				$sub = Read-Host '#'
+				if($list.$name[$sub].$fg){
+					switch($sub)
+					{
+						"1"{ break}
+						"2"{ break}
+						"3"{ break}
+					}
+				}else{
+					switch($sub)
+					{
+						"1"{ break}
+						"2"{ break}
+					}
+				}; break
+			} else {
+				if($list.$name[1].$fg){
+					switch($sub)
+					{
+						"1"{ break}
+						"2"{ break}
+						"3"{ break}
+					}
+				}else{
+					switch($sub)
+					{
+						"1"{ break}
+						"2"{ break}
+					}
+				}; 
+			
+			}
+        }
+        "3"{
+        
+
+            break
+        }
+        "4"{
+        
+
+            break
+        }
+    }
+}
+function Listing {}
